@@ -1,571 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no">
+      content="width=device-width, initial-scale=1.0,
+      maximum-scale=1.0,user-scalable=no">
 
 <title>Legends of Bharata</title>
 
 <style>
-
-/* =====================================================
-   BASIC
-===================================================== */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #101820;
-    font-family: Arial, sans-serif;
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#101820;
+    font-family:Arial,sans-serif;
+    touch-action:none;
 }
 
-body {
-    touch-action: none;
+#game{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
 }
 
-#game {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+canvas{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
 }
 
-canvas {
-    position: absolute;
-    left: 0;
-    top: 0;
+/* START SCREEN */
 
-    width: 100%;
-    height: 100%;
+#startScreen{
+    position:absolute;
+    inset:0;
+    z-index:20;
 
-    display: block;
-}
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 
-
-/* =====================================================
-   START SCREEN
-===================================================== */
-
-.screen {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    z-index: 100;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    align-items: center;
-
-    text-align: center;
-
-    padding: 20px;
-
-    color: white;
+    text-align:center;
+    color:white;
 
     background:
-        radial-gradient(
-            circle,
-            #26372d 0%,
-            #101c21 70%,
-            #071015 100%
-        );
+      radial-gradient(
+        circle at center,
+        rgba(220,150,40,.25),
+        rgba(8,20,25,.97)
+      );
 }
 
-.screen.hidden {
-    display: none !important;
+#startScreen h1{
+    font-size:clamp(35px,8vw,75px);
+    letter-spacing:2px;
+    margin-bottom:12px;
 }
 
-.om {
-    font-size: 58px;
-    margin-bottom: 15px;
+#startScreen h2{
+    margin-bottom:15px;
 }
 
-.screen h1 {
-
-    font-size: clamp(32px, 8vw, 76px);
-
-    letter-spacing: 2px;
-
-    margin-bottom: 12px;
+#startScreen p{
+    margin:8px;
 }
 
-.screen h2 {
-
-    font-size: clamp(18px, 4vw, 32px);
-
-    margin-bottom: 15px;
+.om{
+    font-size:55px;
+    margin-bottom:10px;
 }
 
-.screen p {
+#startButton,
+#restartButton{
+    margin-top:20px;
+    padding:17px 30px;
 
-    font-size: 17px;
+    border:0;
+    border-radius:14px;
 
-    margin-bottom: 25px;
+    background:#df8c13;
+    color:white;
+
+    font-size:19px;
+    font-weight:bold;
+
+    box-shadow:0 5px 0 #8b520b;
 }
 
-
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-button {
-
-    border: none;
-
-    outline: none;
-
-    cursor: pointer;
-
-    user-select: none;
-
-    -webkit-user-select: none;
-
-    touch-action: manipulation;
-
-    color: white;
-
-    background: #d88919;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    padding: 15px 26px;
-
-    border-radius: 14px;
-
-    box-shadow:
-        0 5px 0 #8c5410,
-        0 10px 20px rgba(0,0,0,0.35);
+#startButton:active,
+#restartButton:active{
+    transform:translateY(4px);
+    box-shadow:0 1px 0 #8b520b;
 }
 
-button:active {
-
-    transform: translateY(4px);
-
-    box-shadow:
-        0 1px 0 #8c5410;
+.hidden{
+    display:none !important;
 }
 
-#startButton {
+/* HUD */
 
-    font-size: 20px;
+#hud{
+    position:absolute;
+    top:12px;
+    left:12px;
+    right:12px;
 
-    padding: 17px 30px;
+    z-index:10;
 
-    margin-bottom: 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    pointer-events:none;
 }
 
+#stats{
+    background:rgba(15,30,35,.82);
+    color:white;
 
-/* =====================================================
-   CONTROLS INFORMATION
-===================================================== */
+    padding:10px 14px;
+    border-radius:12px;
 
-.controls-info {
+    min-width:180px;
 
-    line-height: 1.7;
-
-    font-size: 14px;
-
-    color: #eeeeee;
+    line-height:1.7;
 }
 
-.mobile-info {
+.healthOuter{
+    width:130px;
+    height:13px;
 
-    display: none;
+    display:inline-block;
 
-    line-height: 1.7;
+    background:#482525;
+    border-radius:20px;
 
-    font-size: 14px;
+    overflow:hidden;
+    vertical-align:middle;
 }
 
-
-/* =====================================================
-   HUD
-===================================================== */
-
-#hud {
-
-    position: absolute;
-
-    left: 12px;
-    right: 12px;
-    top: 12px;
-
-    z-index: 20;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: flex-start;
-
-    color: white;
-
-    pointer-events: none;
+#healthBar{
+    width:100%;
+    height:100%;
+    background:#e53935;
 }
 
-.hud-left {
+#pause{
+    pointer-events:auto;
 
-    background:
-        rgba(10,20,25,0.85);
+    width:48px;
+    height:48px;
 
-    border-radius: 12px;
+    border:0;
+    border-radius:12px;
 
-    padding: 9px 12px;
+    background:rgba(20,30,35,.85);
+    color:white;
 
-    min-width: 180px;
-
-    font-size: 15px;
-
-    line-height: 1.8;
+    font-size:20px;
 }
 
-.health-container {
+/* QUEST */
 
-    display: flex;
+#quest{
+    position:absolute;
+    z-index:9;
 
-    align-items: center;
+    top:85px;
+    left:50%;
 
-    gap: 7px;
+    transform:translateX(-50%);
+
+    color:white;
+    background:rgba(15,30,35,.82);
+
+    padding:10px 18px;
+    border-radius:12px;
+
+    text-align:center;
+    white-space:nowrap;
 }
 
-.health-bar {
+/* MOBILE CONTROLS */
 
-    width: 120px;
+#mobileControls{
+    position:absolute;
 
-    height: 12px;
+    left:0;
+    right:0;
+    bottom:18px;
 
-    background: #422323;
+    z-index:15;
 
-    border-radius: 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
 
-    overflow: hidden;
+    padding:0 18px;
+
+    pointer-events:none;
 }
 
-#healthBar {
-
-    width: 100%;
-
-    height: 100%;
-
-    background: #e53935;
-
-    border-radius: 20px;
+.controlGroup{
+    display:flex;
+    gap:10px;
 }
 
-.level-text {
+.control{
+    pointer-events:auto;
 
-    background:
-        rgba(10,20,25,0.85);
+    width:65px;
+    height:65px;
 
-    border-radius: 12px;
+    border-radius:50%;
 
-    padding: 9px 15px;
+    border:2px solid rgba(255,255,255,.55);
 
-    font-weight: bold;
+    background:rgba(20,30,35,.78);
+
+    color:white;
+
+    font-size:26px;
+    font-weight:bold;
+
+    user-select:none;
+    touch-action:none;
 }
 
-#pauseButton {
-
-    pointer-events: auto;
-
-    padding: 9px 12px;
-
-    font-size: 17px;
-
-    background:
-        rgba(25,35,40,0.85);
+.control:active{
+    background:rgba(220,140,20,.9);
+    transform:scale(.94);
 }
 
+/* GAME OVER */
 
-/* =====================================================
-   QUEST
-===================================================== */
+#gameOver{
+    position:absolute;
+    inset:0;
 
-#questBox {
+    z-index:30;
 
-    position: absolute;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 
-    top: 82px;
+    color:white;
+    text-align:center;
 
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    z-index: 20;
-
-    width: max-content;
-
-    max-width: 90vw;
-
-    padding: 9px 16px;
-
-    color: white;
-
-    text-align: center;
-
-    background:
-        rgba(10,20,25,0.82);
-
-    border-radius: 10px;
-
-    font-size: 14px;
-
-    pointer-events: none;
+    background:rgba(5,12,16,.92);
 }
 
-#questText {
-
-    margin-top: 4px;
+#gameOver h1{
+    font-size:45px;
+    margin-bottom:15px;
 }
 
-
-/* =====================================================
-   MOBILE CONTROLS
-===================================================== */
-
-#mobileControls {
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    bottom: 15px;
-
-    z-index: 30;
-
-    display: none;
-
-    justify-content: space-between;
-
-    align-items: flex-end;
-
-    padding: 0 15px;
-
-    pointer-events: none;
-}
-
-.movement,
-.actions {
-
-    display: flex;
-
-    gap: 9px;
-}
-
-#mobileControls button {
-
-    pointer-events: auto;
-
-    width: 62px;
-    height: 62px;
-
-    padding: 0;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    font-size: 24px;
-
-    color: white;
-
-    background:
-        rgba(20,25,30,0.85);
-
-    border:
-        2px solid rgba(255,255,255,0.45);
-
-    box-shadow:
-        0 5px 15px rgba(0,0,0,0.45);
-}
-
-#mobileControls button:active {
-
-    background:
-        rgba(80,80,80,0.9);
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (pointer: coarse) {
-
-    #mobileControls {
-        display: flex;
-    }
-
-    .controls-info {
-        display: none;
-    }
-
-    .mobile-info {
-        display: block;
-    }
-
-    .level-text {
-        display: none;
+@media(min-width:801px){
+    #mobileControls{
+        display:none;
     }
 }
 
-
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 500px) {
-
-    .screen h1 {
-        font-size: 31px;
-        letter-spacing: 1px;
+@media(max-width:800px){
+    #stats{
+        min-width:145px;
+        font-size:13px;
     }
 
-    .screen h2 {
-        font-size: 17px;
+    .healthOuter{
+        width:85px;
     }
 
-    .screen p {
-        font-size: 14px;
-    }
-
-    .om {
-        font-size: 48px;
-    }
-
-    #hud {
-        left: 7px;
-        right: 7px;
-        top: 7px;
-    }
-
-    .hud-left {
-        min-width: 145px;
-        padding: 7px 9px;
-        font-size: 12px;
-    }
-
-    .health-bar {
-        width: 85px;
-        height: 10px;
-    }
-
-    #pauseButton {
-        padding: 8px 10px;
-        font-size: 15px;
-    }
-
-    #questBox {
-        top: 70px;
-        font-size: 12px;
-    }
-
-    #mobileControls {
-        bottom: 10px;
-        padding: 0 8px;
-    }
-
-    .movement,
-    .actions {
-        gap: 5px;
-    }
-
-    #mobileControls button {
-        width: 54px;
-        height: 54px;
-        font-size: 21px;
+    #quest{
+        font-size:13px;
+        max-width:85%;
+        overflow:hidden;
+        text-overflow:ellipsis;
     }
 }
 
-
-/* =====================================================
-   VERY SMALL PHONE
-===================================================== */
-
-@media (max-width: 360px) {
-
-    #mobileControls button {
-        width: 48px;
-        height: 48px;
-        font-size: 18px;
+@media(max-width:400px){
+    .control{
+        width:56px;
+        height:56px;
+        font-size:21px;
     }
 
-    .movement,
-    .actions {
-        gap: 3px;
+    #mobileControls{
+        padding:0 10px;
     }
 }
-
-
-/* =====================================================
-   LANDSCAPE PHONE
-===================================================== */
-
-@media (max-height: 500px) and (orientation: landscape) {
-
-    #mobileControls {
-        bottom: 7px;
-    }
-
-    #mobileControls button {
-        width: 52px;
-        height: 52px;
-    }
-
-    #questBox {
-        top: 58px;
-    }
-}
-
 </style>
-
 </head>
-
 
 <body>
 
 <div id="game">
 
-<canvas id="gameCanvas"></canvas>
+<canvas id="canvas"></canvas>
 
+<!-- HUD -->
 
-<!-- ===================================================
-     START SCREEN
-=================================================== -->
+<div id="hud">
 
-<div id="startScreen" class="screen">
+    <div id="stats">
+
+        ❤️
+        <span class="healthOuter">
+            <span id="healthBar"></span>
+        </span>
+
+        <br>
+
+        🪙 Coins:
+        <span id="coins">0</span>
+
+        <br>
+
+        🏆 Score:
+        <span id="score">0</span>
+
+    </div>
+
+    <button id="pause">⏸</button>
+
+</div>
+
+<!-- QUEST -->
+
+<div id="quest">
+    📜 QUEST
+    <br>
+    <span id="questText">
+        Reach the ancient temple
+    </span>
+</div>
+
+<!-- START SCREEN -->
+
+<div id="startScreen">
 
     <div class="om">ॐ</div>
 
@@ -573,1361 +359,792 @@ button:active {
 
     <h2>The Guardian's Journey</h2>
 
-    <p>
-        Enter the ancient realm and begin your adventure.
-    </p>
+    <p>Enter the ancient realm and begin your adventure.</p>
 
     <button id="startButton">
         ⚔️ BEGIN JOURNEY
     </button>
 
-    <div class="controls-info">
+    <p>
+        ⌨️ PC: A/D or ←/→ to move
+    </p>
 
-        <b>💻 PC CONTROLS</b><br>
+    <p>
+        W / ↑ / SPACE to jump
+    </p>
 
-        A / D or ← / → — Move<br>
+    <p>
+        ⚔️ Z or SPACE to attack
+    </p>
 
-        W / ↑ — Jump<br>
-
-        SPACE — Attack<br>
-
-        E — Divine Power<br>
-
-        P / ESC — Pause
-
-    </div>
-
-    <div class="mobile-info">
-
-        <b>📱 MOBILE CONTROLS</b><br>
-
-        Use the buttons on the screen
-
-    </div>
+    <p>
+        📱 Mobile: Use the on-screen controls
+    </p>
 
 </div>
 
-
-<!-- ===================================================
-     HUD
-=================================================== -->
-
-<div id="hud">
-
-    <div class="hud-left">
-
-        <div class="health-container">
-
-            ❤️
-
-            <div class="health-bar">
-
-                <div id="healthBar"></div>
-
-            </div>
-
-        </div>
-
-        <div>
-            🪙 Coins:
-            <span id="coins">0</span>
-        </div>
-
-        <div>
-            🏆 Score:
-            <span id="score">0</span>
-        </div>
-
-    </div>
-
-
-    <div class="level-text">
-
-        LEVEL
-        <span id="level">1</span>
-
-    </div>
-
-
-    <button id="pauseButton">
-        ⏸️
-    </button>
-
-</div>
-
-
-<!-- ===================================================
-     QUEST
-=================================================== -->
-
-<div id="questBox">
-
-    <b>📜 QUEST</b>
-
-    <div id="questText">
-        Begin your journey.
-    </div>
-
-</div>
-
-
-<!-- ===================================================
-     MOBILE CONTROLS
-=================================================== -->
+<!-- MOBILE CONTROLS -->
 
 <div id="mobileControls">
 
-    <div class="movement">
+    <div class="controlGroup">
 
-        <button id="leftButton">
+        <button class="control" id="leftBtn">
             ◀
         </button>
 
-        <button id="rightButton">
+        <button class="control" id="rightBtn">
             ▶
         </button>
 
     </div>
 
+    <div class="controlGroup">
 
-    <div class="actions">
-
-        <button id="jumpButton">
-            ⬆
+        <button class="control" id="jumpBtn">
+            ▲
         </button>
 
-        <button id="attackButton">
+        <button class="control" id="attackBtn">
             ⚔️
-        </button>
-
-        <button id="powerButton">
-            ✨
         </button>
 
     </div>
 
 </div>
 
+<!-- GAME OVER -->
 
-<!-- ===================================================
-     PAUSE
-=================================================== -->
+<div id="gameOver" class="hidden">
 
-<div id="pauseScreen" class="screen hidden">
+    <h1 id="gameOverTitle">
+        GAME OVER
+    </h1>
 
-    <div class="om">ॐ</div>
+    <p id="gameOverText">
+        Your journey has ended.
+    </p>
 
-    <h1>GAME PAUSED</h1>
-
-    <button id="resumeButton">
-        ▶ RESUME
-    </button>
-
-    <br>
-
-    <button id="restartButton1">
-        🔄 RESTART
-    </button>
-
-</div>
-
-
-<!-- ===================================================
-     GAME OVER
-=================================================== -->
-
-<div id="gameOverScreen" class="screen hidden">
-
-    <h1>💀 GAME OVER</h1>
-
-    <p id="gameOverMessage"></p>
-
-    <button id="restartButton2">
+    <button id="restartButton">
         🔄 PLAY AGAIN
     </button>
 
 </div>
 
-
-<!-- ===================================================
-     VICTORY
-=================================================== -->
-
-<div id="victoryScreen" class="screen hidden">
-
-    <div class="om">ॐ</div>
-
-    <h1>🏆 VICTORY!</h1>
-
-    <h2>The Guardian has protected Bharata.</h2>
-
-    <p id="victoryMessage"></p>
-
-    <button id="restartButton3">
-        🔄 PLAY AGAIN
-    </button>
-
 </div>
-
-
-</div>
-
 
 <script>
 
-/* =====================================================
-   CANVAS
-===================================================== */
-
-const canvas =
-    document.getElementById("gameCanvas");
-
-const ctx =
-    canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 let W = 0;
 let H = 0;
 
-function resizeCanvas() {
+function resize(){
 
-    W = window.innerWidth;
-    H = window.innerHeight;
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
 
-    canvas.width = W;
-    canvas.height = H;
 }
 
-resizeCanvas();
+resize();
 
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
+window.addEventListener("resize",resize);
 
 
-/* =====================================================
-   GAME VARIABLES
-===================================================== */
+/* =========================
+   GAME STATE
+========================= */
 
 let gameStarted = false;
-
 let paused = false;
-
 let gameOver = false;
 
-let victory = false;
-
-let frame = 0;
-
+let coins = 0;
 let score = 0;
 
-let coins = 0;
 
-let level = 1;
-
-let cameraX = 0;
-
-const WORLD_WIDTH = 6000;
-
-
-/* =====================================================
-   INPUT
-===================================================== */
-
-const input = {
-
-    left: false,
-
-    right: false
-};
-
-
-/* =====================================================
+/* =========================
    PLAYER
-===================================================== */
+========================= */
 
 const player = {
 
-    x: 150,
+    x:120,
+    y:0,
 
-    y: 300,
+    width:35,
+    height:55,
 
-    width: 45,
+    vx:0,
+    vy:0,
 
-    height: 75,
+    speed:4.5,
+    jumpPower:12,
 
-    vx: 0,
+    grounded:false,
 
-    vy: 0,
+    health:100,
 
-    speed: 5,
+    attacking:false,
+    attackTimer:0
 
-    jumpPower: 14,
-
-    grounded: false,
-
-    health: 100,
-
-    maxHealth: 100,
-
-    facing: 1,
-
-    attackTimer: 0,
-
-    attackCooldown: 0,
-
-    powerCooldown: 0,
-
-    invincible: 0
 };
 
 
-/* =====================================================
+/* =========================
+   WORLD
+========================= */
+
+const groundY = 0;
+
+let cameraX = 0;
+
+const worldWidth = 5000;
+
+
+/* =========================
+   INPUT
+========================= */
+
+const keys = {
+
+    left:false,
+    right:false,
+    jump:false,
+    attack:false
+
+};
+
+
+/* =========================
+   KEYBOARD
+========================= */
+
+window.addEventListener("keydown",e=>{
+
+    if(
+        ["ArrowLeft","ArrowRight","ArrowUp","Space"].includes(e.code)
+    ){
+        e.preventDefault();
+    }
+
+    if(e.code==="ArrowLeft" || e.code==="KeyA"){
+        keys.left=true;
+    }
+
+    if(e.code==="ArrowRight" || e.code==="KeyD"){
+        keys.right=true;
+    }
+
+    if(e.code==="ArrowUp" || e.code==="KeyW"){
+        keys.jump=true;
+    }
+
+    if(e.code==="Space" || e.code==="KeyZ"){
+        keys.attack=true;
+    }
+
+    if(e.code==="KeyP"){
+        togglePause();
+    }
+
+});
+
+window.addEventListener("keyup",e=>{
+
+    if(e.code==="ArrowLeft" || e.code==="KeyA"){
+        keys.left=false;
+    }
+
+    if(e.code==="ArrowRight" || e.code==="KeyD"){
+        keys.right=false;
+    }
+
+    if(e.code==="ArrowUp" || e.code==="KeyW"){
+        keys.jump=false;
+    }
+
+    if(e.code==="Space" || e.code==="KeyZ"){
+        keys.attack=false;
+    }
+
+});
+
+
+/* =========================
+   MOBILE BUTTON
+========================= */
+
+function mobileButton(id,key){
+
+    const button=document.getElementById(id);
+
+    button.addEventListener("touchstart",e=>{
+
+        e.preventDefault();
+
+        keys[key]=true;
+
+    },{passive:false});
+
+    button.addEventListener("touchend",e=>{
+
+        e.preventDefault();
+
+        keys[key]=false;
+
+    },{passive:false});
+
+    button.addEventListener("touchcancel",()=>{
+
+        keys[key]=false;
+
+    });
+
+    button.addEventListener("mousedown",()=>{
+
+        keys[key]=true;
+
+    });
+
+    button.addEventListener("mouseup",()=>{
+
+        keys[key]=false;
+
+    });
+
+}
+
+mobileButton("leftBtn","left");
+mobileButton("rightBtn","right");
+mobileButton("jumpBtn","jump");
+mobileButton("attackBtn","attack");
+
+
+/* =========================
    PLATFORMS
-===================================================== */
+========================= */
 
 const platforms = [
 
-    {
-        x: 0,
-        y: 520,
-        w: 850
-    },
+    {x:0,y:0,width:900,height:80},
 
-    {
-        x: 1000,
-        y: 520,
-        w: 500
-    },
+    {x:980,y:0,width:700,height:80},
 
-    {
-        x: 1650,
-        y: 480,
-        w: 850
-    },
+    {x:1760,y:0,width:900,height:80},
 
-    {
-        x: 2700,
-        y: 520,
-        w: 550
-    },
+    {x:2740,y:0,width:800,height:80},
 
-    {
-        x: 3450,
-        y: 470,
-        w: 800
-    },
-
-    {
-        x: 4400,
-        y: 520,
-        w: 900
-    },
-
-    {
-        x: 5450,
-        y: 480,
-        w: 550
-    }
+    {x:3620,y:0,width:1300,height:80}
 
 ];
 
 
-/* =====================================================
-   ENEMIES
-===================================================== */
+/* =========================
+   COINS
+========================= */
 
-function createEnemy(x, y, health) {
+let coinList = [];
 
-    return {
+function createCoins(){
 
-        x: x,
+    coinList=[];
 
-        y: y,
+    for(let x=350;x<4700;x+=230){
 
-        width: 45,
+        coinList.push({
 
-        height: 75,
+            x:x,
+            y:groundLevel()-80,
+            collected:false
 
-        health: health,
+        });
 
-        maxHealth: health,
+    }
 
-        speed: 0.7,
-
-        alive: true,
-
-        hitCooldown: 0
-    };
 }
 
 
-const enemies = [
+/* =========================
+   ENEMIES
+========================= */
 
-    createEnemy(600, 445, 50),
+let enemies=[];
 
-    createEnemy(1200, 445, 70),
+function createEnemies(){
 
-    createEnemy(1900, 405, 80),
+    enemies=[
 
-    createEnemy(2300, 405, 80),
+        {
+            x:650,
+            y:0,
+            width:42,
+            height:58,
+            vx:1.2,
+            min:500,
+            max:850,
+            health:40,
+            alive:true
+        },
 
-    createEnemy(2900, 445, 100),
+        {
+            x:1250,
+            y:0,
+            width:42,
+            height:58,
+            vx:1.5,
+            min:1050,
+            max:1600,
+            health:50,
+            alive:true
+        },
 
-    createEnemy(3700, 395, 120),
+        {
+            x:2050,
+            y:0,
+            width:42,
+            height:58,
+            vx:1.8,
+            min:1850,
+            max:2500,
+            health:60,
+            alive:true
+        },
 
-    createEnemy(4050, 395, 120),
+        {
+            x:3100,
+            y:0,
+            width:45,
+            height:60,
+            vx:2,
+            min:2850,
+            max:3450,
+            health:70,
+            alive:true
+        },
 
-    createEnemy(4650, 445, 150)
+        {
+            x:4050,
+            y:0,
+            width:50,
+            height:65,
+            vx:2,
+            min:3800,
+            max:4600,
+            health:90,
+            alive:true
+        }
 
-];
+    ];
+
+}
 
 
-/* =====================================================
-   BOSS
-===================================================== */
+/* =========================
+   TEMPLE
+========================= */
 
-const boss = {
+const temple={
 
-    x: 5550,
+    x:4650,
+    width:220,
+    height:230
 
-    y: 365,
-
-    width: 80,
-
-    height: 115,
-
-    health: 500,
-
-    maxHealth: 500,
-
-    speed: 0.7,
-
-    alive: true,
-
-    hitCooldown: 0
 };
 
 
-/* =====================================================
-   COINS
-===================================================== */
+/* =========================
+   GROUND
+========================= */
 
-const coinList = [];
+function groundLevel(){
 
-for (
-    let x = 300;
-    x < 5500;
-    x += 180
-) {
+    return H-85;
 
-    coinList.push({
-
-        x: x,
-
-        y:
-            430 -
-            Math.sin(x * 0.01) * 25,
-
-        collected: false
-    });
 }
 
 
-/* =====================================================
-   KEYBOARD CONTROLS
-===================================================== */
+/* =========================
+   START
+========================= */
 
-window.addEventListener(
-    "keydown",
-    function(event) {
+document.getElementById("startButton").onclick=()=>{
 
-        const key =
-            event.key.toLowerCase();
+    document.getElementById("startScreen")
+        .classList.add("hidden");
 
+    startGame();
 
-        if (
-            key === "a" ||
-            key === "arrowleft"
-        ) {
-
-            input.left = true;
-        }
+};
 
 
-        if (
-            key === "d" ||
-            key === "arrowright"
-        ) {
+/* =========================
+   START GAME
+========================= */
 
-            input.right = true;
-        }
+function startGame(){
 
+    gameStarted=true;
+    paused=false;
+    gameOver=false;
 
-        if (
-            key === "w" ||
-            key === "arrowup"
-        ) {
+    coins=0;
+    score=0;
 
-            event.preventDefault();
+    player.x=120;
+    player.y=groundLevel()-player.height;
 
-            jump();
-        }
+    player.vx=0;
+    player.vy=0;
 
+    player.health=100;
 
-        if (event.code === "Space") {
+    cameraX=0;
 
-            event.preventDefault();
+    createCoins();
+    createEnemies();
 
-            attack();
-        }
+    updateHUD();
 
-
-        if (key === "e") {
-
-            divinePower();
-        }
-
-
-        if (
-            key === "p" ||
-            key === "escape"
-        ) {
-
-            togglePause();
-        }
-
-    }
-);
-
-
-window.addEventListener(
-    "keyup",
-    function(event) {
-
-        const key =
-            event.key.toLowerCase();
-
-
-        if (
-            key === "a" ||
-            key === "arrowleft"
-        ) {
-
-            input.left = false;
-        }
-
-
-        if (
-            key === "d" ||
-            key === "arrowright"
-        ) {
-
-            input.right = false;
-        }
-
-    }
-);
-
-
-/* =====================================================
-   MOBILE MOVEMENT
-===================================================== */
-
-function holdButton(
-    element,
-    startFunction,
-    endFunction
-) {
-
-    element.addEventListener(
-        "pointerdown",
-        function(event) {
-
-            event.preventDefault();
-
-            startFunction();
-
-        }
-    );
-
-
-    element.addEventListener(
-        "pointerup",
-        function(event) {
-
-            event.preventDefault();
-
-            endFunction();
-
-        }
-    );
-
-
-    element.addEventListener(
-        "pointercancel",
-        endFunction
-    );
-
-
-    element.addEventListener(
-        "pointerleave",
-        endFunction
-    );
 }
 
 
-holdButton(
+/* =========================
+   PAUSE
+========================= */
 
-    document.getElementById(
-        "leftButton"
-    ),
+document.getElementById("pause").onclick=togglePause;
 
-    function() {
-        input.left = true;
-    },
+function togglePause(){
 
-    function() {
-        input.left = false;
-    }
+    if(!gameStarted || gameOver) return;
 
-);
+    paused=!paused;
 
+    document.getElementById("pause").textContent=
+        paused ? "▶" : "⏸";
 
-holdButton(
-
-    document.getElementById(
-        "rightButton"
-    ),
-
-    function() {
-        input.right = true;
-    },
-
-    function() {
-        input.right = false;
-    }
-
-);
+}
 
 
-document
-    .getElementById("jumpButton")
-    .addEventListener(
-        "pointerdown",
-        function(event) {
-
-            event.preventDefault();
-
-            jump();
-
-        }
-    );
-
-
-document
-    .getElementById("attackButton")
-    .addEventListener(
-        "pointerdown",
-        function(event) {
-
-            event.preventDefault();
-
-            attack();
-
-        }
-    );
-
-
-document
-    .getElementById("powerButton")
-    .addEventListener(
-        "pointerdown",
-        function(event) {
-
-            event.preventDefault();
-
-            divinePower();
-
-        }
-    );
-
-
-/* =====================================================
+/* =========================
    COLLISION
-===================================================== */
+========================= */
 
-function collision(a, b) {
+function collision(a,b){
 
     return (
 
-        a.x <
-        b.x + b.width &&
-
-        a.x + a.width >
-        b.x &&
-
-        a.y <
-        b.y + b.height &&
-
-        a.y + a.height >
-        b.y
+        a.x < b.x+b.width &&
+        a.x+a.width > b.x &&
+        a.y < b.y+b.height &&
+        a.y+a.height > b.y
 
     );
+
 }
 
 
-/* =====================================================
-   JUMP
-===================================================== */
-
-function jump() {
-
-    if (
-        !gameStarted ||
-        paused ||
-        gameOver ||
-        victory
-    ) {
-        return;
-    }
-
-
-    if (player.grounded) {
-
-        player.vy =
-            -player.jumpPower;
-
-        player.grounded = false;
-    }
-}
-
-
-/* =====================================================
-   ATTACK
-===================================================== */
-
-function attack() {
-
-    if (
-        !gameStarted ||
-        paused ||
-        gameOver ||
-        victory
-    ) {
-        return;
-    }
-
-
-    if (
-        player.attackCooldown <= 0
-    ) {
-
-        player.attackTimer = 12;
-
-        player.attackCooldown = 28;
-    }
-}
-
-
-/* =====================================================
-   DIVINE POWER
-===================================================== */
-
-function divinePower() {
-
-    if (
-        !gameStarted ||
-        paused ||
-        gameOver ||
-        victory
-    ) {
-        return;
-    }
-
-
-    if (
-        player.powerCooldown > 0
-    ) {
-        return;
-    }
-
-
-    player.powerCooldown = 300;
-
-
-    score += 50;
-
-
-    quest(
-        "✨ Divine power released!"
-    );
-
-
-    for (
-        const enemy of enemies
-    ) {
-
-        if (
-            enemy.alive &&
-            Math.abs(
-                enemy.x - player.x
-            ) < 250
-        ) {
-
-            enemy.health -= 60;
-
-
-            if (
-                enemy.health <= 0
-            ) {
-
-                enemy.health = 0;
-
-                enemy.alive = false;
-
-                score += 100;
-
-                coins += 5;
-            }
-        }
-    }
-
-
-    if (
-        boss.alive &&
-        Math.abs(
-            boss.x - player.x
-        ) < 250
-    ) {
-
-        boss.health -= 100;
-
-
-        if (
-            boss.health <= 0
-        ) {
-
-            boss.health = 0;
-
-            boss.alive = false;
-
-            score += 1000;
-
-            winGame();
-        }
-    }
-}
-
-
-/* =====================================================
+/* =========================
    UPDATE PLAYER
-===================================================== */
+========================= */
 
-function updatePlayer() {
+function updatePlayer(){
 
-    player.vx = 0;
+    player.vx=0;
 
+    if(keys.left){
 
-    if (input.left) {
+        player.vx=-player.speed;
 
-        player.vx =
-            -player.speed;
+    }
 
-        player.facing = -1;
+    if(keys.right){
+
+        player.vx=player.speed;
+
+    }
+
+    player.x+=player.vx;
+
+    if(player.x<0){
+        player.x=0;
+    }
+
+    if(player.x>worldWidth-player.width){
+        player.x=worldWidth-player.width;
     }
 
 
-    if (input.right) {
+    /* JUMP */
 
-        player.vx =
-            player.speed;
+    if(keys.jump && player.grounded){
 
-        player.facing = 1;
+        player.vy=-player.jumpPower;
+
+        player.grounded=false;
+
     }
 
 
-    player.x += player.vx;
+    /* GRAVITY */
+
+    player.vy+=0.55;
+
+    player.y+=player.vy;
 
 
-    player.x =
-        Math.max(
-            0,
-            Math.min(
-                WORLD_WIDTH -
-                player.width,
-                player.x
-            )
-        );
+    const g=groundLevel();
 
+    if(player.y+player.height>=g){
 
-    player.vy += 0.7;
+        player.y=g-player.height;
 
-    player.y += player.vy;
+        player.vy=0;
 
+        player.grounded=true;
 
-    player.grounded = false;
-
-
-    for (
-        const platform of platforms
-    ) {
-
-        if (
-
-            player.x <
-            platform.x +
-            platform.w &&
-
-            player.x +
-            player.width >
-            platform.x &&
-
-            player.y +
-            player.height >=
-            platform.y &&
-
-            player.y +
-            player.height <=
-            platform.y + 35 &&
-
-            player.vy >= 0
-
-        ) {
-
-            player.y =
-                platform.y -
-                player.height;
-
-            player.vy = 0;
-
-            player.grounded = true;
-        }
     }
 
 
-    if (
-        player.y > H + 200
-    ) {
+    /* ATTACK */
 
-        damagePlayer(25);
+    if(keys.attack && !player.attacking){
 
-        player.x =
-            Math.max(
-                0,
-                player.x - 250
-            );
+        player.attacking=true;
 
-        player.y = 250;
+        player.attackTimer=15;
 
-        player.vy = 0;
     }
 
+    if(player.attacking){
 
-    if (
-        player.attackTimer > 0
-    ) {
         player.attackTimer--;
+
+        if(player.attackTimer<=0){
+
+            player.attacking=false;
+
+        }
+
     }
 
 
-    if (
-        player.attackCooldown > 0
-    ) {
-        player.attackCooldown--;
+    /* CAMERA */
+
+    cameraX=player.x-W*0.35;
+
+    if(cameraX<0) cameraX=0;
+
+    if(cameraX>worldWidth-W){
+
+        cameraX=worldWidth-W;
+
     }
 
-
-    if (
-        player.powerCooldown > 0
-    ) {
-        player.powerCooldown--;
-    }
-
-
-    if (
-        player.invincible > 0
-    ) {
-        player.invincible--;
-    }
-
-
-    cameraX =
-        player.x -
-        W * 0.35;
-
-
-    cameraX =
-        Math.max(
-            0,
-            Math.min(
-                WORLD_WIDTH - W,
-                cameraX
-            )
-        );
 }
 
 
-/* =====================================================
-   DAMAGE
-===================================================== */
+/* =========================
+   ENEMIES
+========================= */
 
-function damagePlayer(amount) {
+function updateEnemies(){
 
-    if (
-        player.invincible > 0
-    ) {
-        return;
-    }
+    enemies.forEach(enemy=>{
 
+        if(!enemy.alive) return;
 
-    player.health -= amount;
+        enemy.x+=enemy.vx;
 
-    player.invincible = 50;
+        if(enemy.x<enemy.min ||
+           enemy.x>enemy.max){
 
+            enemy.vx*=-1;
 
-    if (
-        player.health <= 0
-    ) {
-
-        player.health = 0;
-
-        loseGame();
-    }
-}
+        }
 
 
-/* =====================================================
-   ATTACK COLLISION
-===================================================== */
-
-function updateAttack() {
-
-    if (
-        player.attackTimer <= 0
-    ) {
-        return;
-    }
+        enemy.y=
+            groundLevel()-enemy.height;
 
 
-    const attackBox = {
+        /* PLAYER HIT */
 
-        x:
-            player.facing === 1
-            ? player.x + player.width
-            : player.x - 70,
+        if(collision(player,enemy)){
 
-        y:
-            player.y + 10,
+            if(player.attacking){
 
-        width: 70,
+                enemy.health-=2;
 
-        height: 55
-    };
+                if(enemy.health<=0){
 
+                    enemy.alive=false;
 
-    for (
-        const enemy of enemies
-    ) {
+                    score+=100;
 
-        if (
-            enemy.alive &&
-            collision(
-                attackBox,
-                enemy
-            )
-        ) {
-
-            if (
-                enemy.hitCooldown <= 0
-            ) {
-
-                enemy.health -= 25;
-
-                enemy.hitCooldown = 15;
-
-                score += 10;
-
-
-                if (
-                    enemy.health <= 0
-                ) {
-
-                    enemy.health = 0;
-
-                    enemy.alive = false;
-
-                    score += 100;
-
-                    coins += 3;
                 }
+
             }
-        }
-    }
+            else{
 
+                player.health-=0.15;
 
-    if (
-        boss.alive &&
-        collision(
-            attackBox,
-            boss
-        )
-    ) {
+                if(player.health<=0){
 
-        if (
-            boss.hitCooldown <= 0
-        ) {
+                    endGame(false);
 
-            boss.health -= 20;
+                }
 
-            boss.hitCooldown = 15;
-
-            score += 20;
-
-
-            if (
-                boss.health <= 0
-            ) {
-
-                boss.health = 0;
-
-                boss.alive = false;
-
-                score += 1000;
-
-                winGame();
             }
+
         }
-    }
+
+    });
+
 }
 
 
-/* =====================================================
-   ENEMY UPDATE
-===================================================== */
-
-function updateEnemies() {
-
-    for (
-        const enemy of enemies
-    ) {
-
-        if (!enemy.alive) {
-            continue;
-        }
-
-
-        if (
-            enemy.hitCooldown > 0
-        ) {
-
-            enemy.hitCooldown--;
-        }
-
-
-        const distance =
-            player.x - enemy.x;
-
-
-        if (
-            Math.abs(distance) < 450
-        ) {
-
-            if (
-                distance > 50
-            ) {
-
-                enemy.x +=
-                    enemy.speed;
-            }
-
-
-            if (
-                distance < -50
-            ) {
-
-                enemy.x -=
-                    enemy.speed;
-            }
-
-
-            if (
-                collision(
-                    player,
-                    enemy
-                )
-            ) {
-
-                damagePlayer(
-                    0.35
-                );
-            }
-        }
-    }
-}
-
-
-/* =====================================================
-   BOSS UPDATE
-===================================================== */
-
-function updateBoss() {
-
-    if (
-        !boss.alive
-    ) {
-        return;
-    }
-
-
-    if (
-        boss.hitCooldown > 0
-    ) {
-
-        boss.hitCooldown--;
-    }
-
-
-    const distance =
-        player.x - boss.x;
-
-
-    if (
-        Math.abs(distance) < 750
-    ) {
-
-        if (
-            distance > 90
-        ) {
-
-            boss.x +=
-                boss.speed;
-        }
-
-
-        if (
-            distance < -90
-        ) {
-
-            boss.x -=
-                boss.speed;
-        }
-
-
-        if (
-            collision(
-                player,
-                boss
-            )
-        ) {
-
-            damagePlayer(
-                0.6
-            );
-        }
-    }
-}
-
-
-/* =====================================================
+/* =========================
    COINS
-===================================================== */
+========================= */
 
-function updateCoins() {
+function updateCoins(){
 
-    for (
-        const coin of coinList
-    ) {
+    coinList.forEach(coin=>{
 
-        if (
-            coin.collected
-        ) {
-            continue;
-        }
+        if(coin.collected) return;
 
+        const c={
 
-        const box = {
+            x:coin.x,
+            y:coin.y,
+            width:24,
+            height:24
 
-            x: coin.x - 13,
-
-            y: coin.y - 13,
-
-            width: 26,
-
-            height: 26
         };
 
+        if(collision(player,c)){
 
-        if (
-            collision(
-                player,
-                box
-            )
-        ) {
-
-            coin.collected = true;
+            coin.collected=true;
 
             coins++;
 
-            score += 10;
+            score+=10;
+
         }
-    }
+
+    });
+
 }
 
 
-/* =====================================================
-   BACKGROUND
-===================================================== */
+/* =========================
+   TEMPLE
+========================= */
 
-function drawBackground() {
+function checkTemple(){
 
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            H
-        );
+    if(
 
+        player.x+player.width >
+        temple.x
 
-    gradient.addColorStop(
-        0,
-        "#5eb5dc"
-    );
+    ){
 
+        endGame(true);
 
-    gradient.addColorStop(
-        1,
-        "#d9bd75"
-    );
+    }
+
+}
 
 
-    ctx.fillStyle =
-        gradient;
+/* =========================
+   HUD
+========================= */
+
+function updateHUD(){
+
+    document.getElementById("coins").textContent=coins;
+
+    document.getElementById("score").textContent=score;
+
+    document.getElementById("healthBar").style.width=
+        Math.max(0,player.health)+"%";
+
+}
 
 
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
+/* =========================
+   END GAME
+========================= */
+
+function endGame(won){
+
+    gameOver=true;
+
+    const screen=document.getElementById("gameOver");
+
+    screen.classList.remove("hidden");
+
+    document.getElementById("gameOverTitle").textContent=
+        won ? "🏆 VICTORY!" : "💀 GAME OVER";
+
+    document.getElementById("gameOverText").textContent=
+        won
+        ? "You reached the ancient temple!"
+        : "The Guardian has fallen.";
+
+}
+
+
+/* =========================
+   RESTART
+========================= */
+
+document.getElementById("restartButton").onclick=()=>{
+
+    document.getElementById("gameOver")
+        .classList.add("hidden");
+
+    startGame();
+
+};
+
+
+/* =========================
+   DRAW BACKGROUND
+========================= */
+
+function drawBackground(){
+
+    /* SKY */
+
+    const gradient=
+        ctx.createLinearGradient(0,0,0,H);
+
+    gradient.addColorStop(0,"#69b9d9");
+    gradient.addColorStop(1,"#d8d29d");
+
+    ctx.fillStyle=gradient;
+
+    ctx.fillRect(0,0,W,H);
 
 
     /* SUN */
 
-    ctx.fillStyle =
-        "#ffd75c";
-
+    ctx.fillStyle="#ffd45c";
 
     ctx.beginPath();
 
     ctx.arc(
-        W - 100,
-        90,
-        45,
+        W-100,
+        100,
+        48,
         0,
-        Math.PI * 2
+        Math.PI*2
     );
 
     ctx.fill();
@@ -1935,267 +1152,424 @@ function drawBackground() {
 
     /* MOUNTAINS */
 
-    for (
-        let i = 0;
-        i < 15;
-        i++
-    ) {
+    ctx.fillStyle="#648a74";
 
-        const x =
-            i * 500 -
-            cameraX * 0.2;
-
-
-        ctx.fillStyle =
-            "#668a73";
-
+    for(let x=-500-cameraX%500;
+        x<W+500;
+        x+=500){
 
         ctx.beginPath();
 
-        ctx.moveTo(
-            x,
-            520
-        );
+        ctx.moveTo(x,H-80);
 
-        ctx.lineTo(
-            x + 250,
-            230
-        );
+        ctx.lineTo(x+250,H-390);
 
-        ctx.lineTo(
-            x + 500,
-            520
-        );
+        ctx.lineTo(x+500,H-80);
 
         ctx.closePath();
 
         ctx.fill();
+
     }
+
+
+    /* TREES */
+
+    for(let x=-200-cameraX%300;
+        x<W+300;
+        x+=300){
+
+        drawTree(x,H-85);
+
+    }
+
 }
 
 
-/* =====================================================
-   TREES
-===================================================== */
+/* =========================
+   TREE
+========================= */
 
-function drawTree(x, y) {
+function drawTree(x,y){
 
-    ctx.fillStyle =
-        "#65412d";
-
+    ctx.fillStyle="#67452f";
 
     ctx.fillRect(
-        x - 10,
-        y - 110,
-        20,
-        110
+        x+25,
+        y-120,
+        28,
+        120
     );
 
-
-    ctx.fillStyle =
-        "#24613a";
-
+    ctx.fillStyle="#23613c";
 
     ctx.beginPath();
 
     ctx.arc(
-        x,
-        y - 125,
-        48,
+        x+40,
+        y-145,
+        55,
         0,
-        Math.PI * 2
+        Math.PI*2
     );
 
     ctx.fill();
 
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x - 35,
-        y - 100,
-        32,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x + 35,
-        y - 100,
-        32,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
 }
 
 
-function drawTrees() {
+/* =========================
+   DRAW GROUND
+========================= */
 
-    for (
-        let i = 0;
-        i < 30;
-        i++
-    ) {
+function drawGround(){
 
-        const x =
-            i * 220 -
-            cameraX * 0.5;
+    ctx.fillStyle="#386d39";
 
-        drawTree(
+    ctx.fillRect(
+        -cameraX,
+        groundLevel(),
+        worldWidth,
+        15
+    );
+
+    ctx.fillStyle="#533c29";
+
+    ctx.fillRect(
+        -cameraX,
+        groundLevel()+15,
+        worldWidth,
+        70
+    );
+
+}
+
+
+/* =========================
+   DRAW COINS
+========================= */
+
+function drawCoins(){
+
+    coinList.forEach(coin=>{
+
+        if(coin.collected) return;
+
+        const x=coin.x-cameraX;
+
+        if(x<-50 || x>W+50) return;
+
+        ctx.fillStyle="#ffd21c";
+
+        ctx.beginPath();
+
+        ctx.arc(
             x,
-            520
+            coin.y+12,
+            12,
+            0,
+            Math.PI*2
         );
-    }
+
+        ctx.fill();
+
+        ctx.fillStyle="#9b6d00";
+
+        ctx.font="bold 13px Arial";
+
+        ctx.textAlign="center";
+
+        ctx.fillText(
+            "₹",
+            x,
+            coin.y+17
+        );
+
+    });
+
 }
 
 
-/* =====================================================
-   TEMPLE
-===================================================== */
+/* =========================
+   DRAW PLAYER
+========================= */
 
-function drawTemple() {
+function drawPlayer(){
 
-    const x =
-        1200 -
-        cameraX * 0.7;
-
-
-    const y = 520;
+    const x=player.x-cameraX;
+    const y=player.y;
 
 
-    /* BUILDING */
+    /* SHADOW */
 
-    ctx.fillStyle =
-        "#c99558";
-
-
-    ctx.fillRect(
-        x,
-        y - 130,
-        230,
-        130
-    );
-
-
-    /* ROOF */
-
-    ctx.fillStyle =
-        "#70412b";
-
+    ctx.fillStyle="rgba(0,0,0,.25)";
 
     ctx.beginPath();
 
-    ctx.moveTo(
-        x - 20,
-        y - 130
+    ctx.ellipse(
+        x+18,
+        groundLevel()+4,
+        25,
+        7,
+        0,
+        0,
+        Math.PI*2
     );
-
-    ctx.lineTo(
-        x + 115,
-        y - 215
-    );
-
-    ctx.lineTo(
-        x + 250,
-        y - 130
-    );
-
-    ctx.closePath();
 
     ctx.fill();
 
 
-    /* TOWER */
+    /* BODY */
 
-    ctx.fillStyle =
-        "#a76e39";
+    ctx.fillStyle="#a83232";
 
+    ctx.fillRect(
+        x+6,
+        y+22,
+        28,
+        32
+    );
+
+
+    /* BELT */
+
+    ctx.fillStyle="#e9bd3b";
+
+    ctx.fillRect(
+        x+6,
+        y+39,
+        28,
+        6
+    );
+
+
+    /* HEAD */
+
+    ctx.fillStyle="#d69b63";
 
     ctx.beginPath();
 
-    ctx.moveTo(
-        x + 75,
-        y - 130
+    ctx.arc(
+        x+20,
+        y+14,
+        14,
+        0,
+        Math.PI*2
     );
-
-    ctx.lineTo(
-        x + 115,
-        y - 255
-    );
-
-    ctx.lineTo(
-        x + 155,
-        y - 130
-    );
-
-    ctx.closePath();
 
     ctx.fill();
 
 
-    /* DOOR */
+    /* HEAD BAND */
 
-    ctx.fillStyle =
-        "#38251d";
-
+    ctx.fillStyle="#1e1e1e";
 
     ctx.fillRect(
-        x + 90,
-        y - 75,
-        50,
-        75
+        x+6,
+        y+2,
+        28,
+        7
     );
 
 
-    /* FLAG */
+    /* EYES */
 
-    ctx.strokeStyle =
-        "#38251d";
+    ctx.fillStyle="#111";
 
-    ctx.lineWidth = 4;
+    ctx.fillRect(
+        x+14,
+        y+13,
+        3,
+        3
+    );
 
+    ctx.fillRect(
+        x+24,
+        y+13,
+        3,
+        3
+    );
+
+
+    /* SWORD */
+
+    ctx.strokeStyle="#eee";
+
+    ctx.lineWidth=5;
 
     ctx.beginPath();
 
     ctx.moveTo(
-        x + 115,
-        y - 255
+        x+32,
+        y+38
     );
 
     ctx.lineTo(
-        x + 115,
-        y - 310
+        x+54,
+        y+15
     );
 
     ctx.stroke();
 
 
-    ctx.fillStyle =
-        "#d84832";
+    /* ATTACK EFFECT */
 
+    if(player.attacking){
+
+        ctx.strokeStyle="#ffd54a";
+
+        ctx.lineWidth=6;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x+25,
+            y+28,
+            35,
+            -1,
+            1
+        );
+
+        ctx.stroke();
+
+    }
+
+}
+
+
+/* =========================
+   DRAW ENEMIES
+========================= */
+
+function drawEnemies(){
+
+    enemies.forEach(enemy=>{
+
+        if(!enemy.alive) return;
+
+        const x=enemy.x-cameraX;
+
+        if(x<-100 || x>W+100) return;
+
+        const y=enemy.y;
+
+
+        /* BODY */
+
+        ctx.fillStyle="#552066";
+
+        ctx.fillRect(
+            x+5,
+            y+20,
+            enemy.width-10,
+            enemy.height-20
+        );
+
+
+        /* HEAD */
+
+        ctx.fillStyle="#b64b4b";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x+enemy.width/2,
+            y+14,
+            14,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+
+        /* EYES */
+
+        ctx.fillStyle="red";
+
+        ctx.fillRect(
+            x+12,
+            y+12,
+            5,
+            5
+        );
+
+        ctx.fillRect(
+            x+25,
+            y+12,
+            5,
+            5
+        );
+
+
+        /* HEALTH */
+
+        ctx.fillStyle="#301818";
+
+        ctx.fillRect(
+            x,
+            y-10,
+            enemy.width,
+            6
+        );
+
+        ctx.fillStyle="#e53935";
+
+        ctx.fillRect(
+            x,
+            y-10,
+            enemy.width*
+            (enemy.health/100),
+            6
+        );
+
+    });
+
+}
+
+
+/* =========================
+   TEMPLE
+========================= */
+
+function drawTemple(){
+
+    const x=temple.x-cameraX;
+
+    if(x>W || x+temple.width<0) return;
+
+
+    /* BUILDING */
+
+    ctx.fillStyle="#d09b5b";
+
+    ctx.fillRect(
+        x,
+        groundLevel()-170,
+        temple.width,
+        170
+    );
+
+
+    /* ROOF */
+
+    ctx.fillStyle="#7d3f29";
 
     ctx.beginPath();
 
     ctx.moveTo(
-        x + 115,
-        y - 310
+        x-20,
+        groundLevel()-170
     );
 
     ctx.lineTo(
-        x + 165,
-        y - 295
+        x+temple.width/2,
+        groundLevel()-250
     );
 
     ctx.lineTo(
-        x + 115,
-        y - 280
+        x+temple.width+20,
+        groundLevel()-170
     );
 
     ctx.closePath();
@@ -2205,1271 +1579,142 @@ function drawTemple() {
 
     /* OM */
 
-    ctx.fillStyle =
-        "#ffe083";
+    ctx.fillStyle="#ffd54f";
 
-    ctx.font =
-        "bold 30px Arial";
+    ctx.font="40px Arial";
 
-    ctx.textAlign =
-        "center";
-
+    ctx.textAlign="center";
 
     ctx.fillText(
         "ॐ",
-        x + 115,
-        y - 170
+        x+temple.width/2,
+        groundLevel()-185
     );
 
 
-    ctx.textAlign =
-        "left";
-}
+    /* DOOR */
 
-
-/* =====================================================
-   VILLAGE
-===================================================== */
-
-function drawHouse(x, y) {
-
-    ctx.fillStyle =
-        "#c78950";
-
+    ctx.fillStyle="#38251e";
 
     ctx.fillRect(
-        x,
-        y - 95,
-        150,
-        95
+        x+80,
+        groundLevel()-90,
+        60,
+        90
     );
 
 
-    ctx.fillStyle =
-        "#70412c";
+    /* FLAG */
 
+    ctx.strokeStyle="#38251e";
+
+    ctx.lineWidth=5;
 
     ctx.beginPath();
 
     ctx.moveTo(
-        x - 15,
-        y - 95
+        x+temple.width/2,
+        groundLevel()-250
     );
 
     ctx.lineTo(
-        x + 75,
-        y - 160
+        x+temple.width/2,
+        groundLevel()-310
     );
-
-    ctx.lineTo(
-        x + 165,
-        y - 95
-    );
-
-    ctx.closePath();
-
-    ctx.fill();
-
-
-    ctx.fillStyle =
-        "#38261d";
-
-
-    ctx.fillRect(
-        x + 58,
-        y - 60,
-        35,
-        60
-    );
-
-
-    ctx.fillStyle =
-        "#72c4d8";
-
-
-    ctx.fillRect(
-        x + 15,
-        y - 62,
-        30,
-        25
-    );
-}
-
-
-function drawVillage() {
-
-    drawHouse(
-        2050 -
-        cameraX * 0.5,
-        480
-    );
-
-
-    drawHouse(
-        2250 -
-        cameraX * 0.5,
-        480
-    );
-}
-
-
-/* =====================================================
-   RIVERS
-===================================================== */
-
-function drawRiver(x, width) {
-
-    const sx =
-        x - cameraX;
-
-
-    ctx.fillStyle =
-        "#3299ca";
-
-
-    ctx.fillRect(
-        sx,
-        520,
-        width,
-        100
-    );
-
-
-    ctx.strokeStyle =
-        "rgba(255,255,255,0.4)";
-
-
-    ctx.lineWidth = 3;
-
-
-    for (
-        let i = 0;
-        i < 3;
-        i++
-    ) {
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            sx + 10,
-            545 + i * 22
-        );
-
-        ctx.lineTo(
-            sx + width - 10,
-            545 + i * 22
-        );
-
-        ctx.stroke();
-    }
-}
-
-
-function drawRivers() {
-
-    drawRiver(850, 150);
-
-    drawRiver(1500, 150);
-
-    drawRiver(3250, 200);
-
-    drawRiver(4250, 150);
-
-    drawRiver(5300, 150);
-}
-
-
-/* =====================================================
-   GROUND
-===================================================== */
-
-function drawPlatforms() {
-
-    for (
-        const platform of platforms
-    ) {
-
-        const x =
-            platform.x -
-            cameraX;
-
-
-        ctx.fillStyle =
-            "#65432c";
-
-
-        ctx.fillRect(
-            x,
-            platform.y,
-            platform.w,
-            120
-        );
-
-
-        ctx.fillStyle =
-            "#3d783c";
-
-
-        ctx.fillRect(
-            x,
-            platform.y,
-            platform.w,
-            12
-        );
-    }
-}
-
-
-/* =====================================================
-   COINS DRAW
-===================================================== */
-
-function drawCoins() {
-
-    for (
-        const coin of coinList
-    ) {
-
-        if (
-            coin.collected
-        ) {
-            continue;
-        }
-
-
-        const x =
-            coin.x -
-            cameraX;
-
-
-        const y =
-            coin.y +
-            Math.sin(
-                frame * 0.08 +
-                coin.x
-            ) * 5;
-
-
-        ctx.fillStyle =
-            "#ffd43b";
-
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x,
-            y,
-            12,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-
-        ctx.fillStyle =
-            "#8a6100";
-
-
-        ctx.font =
-            "bold 12px Arial";
-
-
-        ctx.textAlign =
-            "center";
-
-
-        ctx.fillText(
-            "₹",
-            x,
-            y + 4
-        );
-
-
-        ctx.textAlign =
-            "left";
-    }
-}
-
-
-/* =====================================================
-   PLAYER DRAW
-===================================================== */
-
-function drawPlayer() {
-
-    if (
-        player.invincible > 0 &&
-        Math.floor(
-            player.invincible / 5
-        ) % 2 === 0
-    ) {
-        return;
-    }
-
-
-    const x =
-        player.x -
-        cameraX;
-
-
-    const y =
-        player.y;
-
-
-    /* SHADOW */
-
-    ctx.fillStyle =
-        "rgba(0,0,0,0.25)";
-
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        x + 22,
-        y + 78,
-        25,
-        7,
-        0,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /* LEGS */
-
-    ctx.fillStyle =
-        "#30241d";
-
-
-    ctx.fillRect(
-        x + 8,
-        y + 55,
-        12,
-        20
-    );
-
-
-    ctx.fillRect(
-        x + 27,
-        y + 55,
-        12,
-        20
-    );
-
-
-    /* BODY */
-
-    ctx.fillStyle =
-        "#9c2e27";
-
-
-    ctx.fillRect(
-        x + 6,
-        y + 25,
-        34,
-        38
-    );
-
-
-    /* BELT */
-
-    ctx.fillStyle =
-        "#e0ad3e";
-
-
-    ctx.fillRect(
-        x + 6,
-        y + 47,
-        34,
-        6
-    );
-
-
-    /* HEAD */
-
-    ctx.fillStyle =
-        "#b97853";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x + 23,
-        y + 15,
-        15,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /* HAIR */
-
-    ctx.fillStyle =
-        "#241b17";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x + 23,
-        y + 10,
-        15,
-        Math.PI,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /* HEADBAND */
-
-    ctx.fillStyle =
-        "#e2ae3d";
-
-
-    ctx.fillRect(
-        x + 8,
-        y + 9,
-        30,
-        5
-    );
-
-
-    /* EYE */
-
-    ctx.fillStyle =
-        "#111";
-
-
-    ctx.fillRect(
-        x +
-        (
-            player.facing === 1
-            ? 29
-            : 12
-        ),
-        y + 15,
-        3,
-        3
-    );
-
-
-    /* SWORD */
-
-    ctx.strokeStyle =
-        "#eeeeee";
-
-    ctx.lineWidth = 5;
-
-
-    ctx.beginPath();
-
-
-    if (
-        player.attackTimer > 0
-    ) {
-
-        ctx.moveTo(
-            x + 32,
-            y + 42
-        );
-
-
-        ctx.lineTo(
-
-            x +
-            (
-                player.facing === 1
-                ? 72
-                : -30
-            ),
-
-            y + 5
-        );
-
-    } else {
-
-        ctx.moveTo(
-            x + 35,
-            y + 43
-        );
-
-
-        ctx.lineTo(
-
-            x +
-            (
-                player.facing === 1
-                ? 62
-                : 5
-            ),
-
-            y + 20
-        );
-    }
-
 
     ctx.stroke();
 
 
-    /* ATTACK EFFECT */
-
-    if (
-        player.attackTimer > 0
-    ) {
-
-        ctx.strokeStyle =
-            "#ffe36b";
-
-        ctx.lineWidth = 6;
-
-
-        ctx.beginPath();
-
-
-        ctx.arc(
-            x + 35,
-            y + 35,
-            42,
-            -0.8,
-            0.7
-        );
-
-
-        ctx.stroke();
-    }
-
-
-    /* DIVINE EFFECT */
-
-    if (
-        player.powerCooldown > 270
-    ) {
-
-        ctx.strokeStyle =
-            "#ffe878";
-
-        ctx.lineWidth = 5;
-
-
-        ctx.beginPath();
-
-
-        ctx.arc(
-            x + 23,
-            y + 35,
-            55,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.stroke();
-    }
-}
-
-
-/* =====================================================
-   ENEMY DRAW
-===================================================== */
-
-function drawEnemy(enemy) {
-
-    const x =
-        enemy.x -
-        cameraX;
-
-
-    const y =
-        enemy.y;
-
-
-    /* BODY */
-
-    ctx.fillStyle =
-        "#55255b";
-
-
-    ctx.fillRect(
-        x + 5,
-        y + 28,
-        35,
-        47
-    );
-
-
-    /* HEAD */
-
-    ctx.fillStyle =
-        "#965b51";
-
+    ctx.fillStyle="#e53935";
 
     ctx.beginPath();
-
-
-    ctx.arc(
-        x + 22,
-        y + 17,
-        16,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fill();
-
-
-    /* EYES */
-
-    ctx.fillStyle =
-        "#ff2929";
-
-
-    ctx.fillRect(
-        x + 13,
-        y + 14,
-        6,
-        5
-    );
-
-
-    ctx.fillRect(
-        x + 27,
-        y + 14,
-        6,
-        5
-    );
-
-
-    /* HEALTH BACKGROUND */
-
-    ctx.fillStyle =
-        "#222";
-
-
-    ctx.fillRect(
-        x,
-        y - 12,
-        45,
-        6
-    );
-
-
-    /* HEALTH */
-
-    ctx.fillStyle =
-        "#e33";
-
-
-    ctx.fillRect(
-
-        x,
-        y - 12,
-
-        45 *
-        (
-            enemy.health /
-            enemy.maxHealth
-        ),
-
-        6
-    );
-}
-
-
-function drawEnemies() {
-
-    for (
-        const enemy of enemies
-    ) {
-
-        if (
-            enemy.alive
-        ) {
-
-            drawEnemy(enemy);
-        }
-    }
-}
-
-
-/* =====================================================
-   BOSS DRAW
-===================================================== */
-
-function drawBoss() {
-
-    if (
-        !boss.alive
-    ) {
-        return;
-    }
-
-
-    const x =
-        boss.x -
-        cameraX;
-
-
-    const y =
-        boss.y;
-
-
-    /* AURA */
-
-    ctx.fillStyle =
-        "rgba(100,20,130,0.2)";
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x + 40,
-        y + 60,
-        80,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fill();
-
-
-    /* BODY */
-
-    ctx.fillStyle =
-        "#32133f";
-
-
-    ctx.fillRect(
-        x,
-        y + 35,
-        80,
-        80
-    );
-
-
-    /* HEAD */
-
-    ctx.fillStyle =
-        "#704449";
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x + 40,
-        y + 20,
-        25,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fill();
-
-
-    /* CROWN */
-
-    ctx.fillStyle =
-        "#d6a33b";
-
-
-    ctx.beginPath();
-
 
     ctx.moveTo(
-        x + 10,
-        y + 5
+        x+temple.width/2,
+        groundLevel()-310
     );
-
 
     ctx.lineTo(
-        x + 25,
-        y - 30
+        x+temple.width/2+55,
+        groundLevel()-295
     );
-
 
     ctx.lineTo(
-        x + 40,
-        y
+        x+temple.width/2,
+        groundLevel()-280
     );
-
-
-    ctx.lineTo(
-        x + 55,
-        y - 30
-    );
-
-
-    ctx.lineTo(
-        x + 70,
-        y + 5
-    );
-
 
     ctx.closePath();
 
-
     ctx.fill();
 
-
-    /* EYES */
-
-    ctx.fillStyle =
-        "#ff2222";
-
-
-    ctx.fillRect(
-        x + 20,
-        y + 18,
-        7,
-        5
-    );
-
-
-    ctx.fillRect(
-        x + 53,
-        y + 18,
-        7,
-        5
-    );
-
-
-    /* BOSS HEALTH */
-
-    ctx.fillStyle =
-        "#222";
-
-
-    ctx.fillRect(
-        x - 20,
-        y - 55,
-        120,
-        11
-    );
-
-
-    ctx.fillStyle =
-        "#e32626";
-
-
-    ctx.fillRect(
-
-        x - 20,
-        y - 55,
-
-        120 *
-        (
-            boss.health /
-            boss.maxHealth
-        ),
-
-        11
-    );
-
-
-    ctx.fillStyle =
-        "white";
-
-
-    ctx.font =
-        "bold 13px Arial";
-
-
-    ctx.fillText(
-        "FOREST GUARDIAN",
-        x - 5,
-        y - 65
-    );
 }
 
 
-/* =====================================================
-   DRAW EVERYTHING
-===================================================== */
+/* =========================
+   DRAW
+========================= */
 
-function draw() {
+function draw(){
+
+    ctx.clearRect(0,0,W,H);
 
     drawBackground();
 
-    drawTrees();
-
-    drawTemple();
-
-    drawVillage();
-
-    drawRivers();
-
-    drawPlatforms();
+    drawGround();
 
     drawCoins();
 
+    drawTemple();
+
     drawEnemies();
 
-    drawBoss();
-
     drawPlayer();
+
 }
 
 
-/* =====================================================
-   HUD
-===================================================== */
+/* =========================
+   GAME LOOP
+========================= */
 
-function updateHUD() {
+function gameLoop(){
 
-    document.getElementById(
-        "healthBar"
-    ).style.width =
-        player.health + "%";
+    requestAnimationFrame(gameLoop);
 
+    if(!gameStarted) {
 
-    document.getElementById(
-        "coins"
-    ).textContent =
-        coins;
+        draw();
 
+        return;
 
-    document.getElementById(
-        "score"
-    ).textContent =
-        score;
+    }
 
+    if(paused || gameOver){
 
-    document.getElementById(
-        "level"
-    ).textContent =
-        level;
-}
+        draw();
+
+        return;
+
+    }
 
 
-/* =====================================================
-   QUEST
-===================================================== */
+    updatePlayer();
 
-function quest(text) {
+    updateEnemies();
 
-    document.getElementById(
-        "questText"
-    ).textContent =
-        text;
-}
+    updateCoins();
 
-
-/* =====================================================
-   START GAME
-===================================================== */
-
-function startGame() {
-
-    gameStarted = true;
-
-    paused = false;
-
-    gameOver = false;
-
-    victory = false;
-
-
-    document
-        .getElementById(
-            "startScreen"
-        )
-        .classList.add(
-            "hidden"
-        );
-
-
-    quest(
-        "🏛️ Reach the ancient temple."
-    );
-
+    checkTemple();
 
     updateHUD();
-}
-
-
-/* =====================================================
-   PAUSE
-===================================================== */
-
-function togglePause() {
-
-    if (
-        !gameStarted ||
-        gameOver ||
-        victory
-    ) {
-        return;
-    }
-
-
-    paused =
-        !paused;
-
-
-    document
-        .getElementById(
-            "pauseScreen"
-        )
-        .classList.toggle(
-            "hidden",
-            !paused
-        );
-}
-
-
-/* =====================================================
-   GAME OVER
-===================================================== */
-
-function loseGame() {
-
-    gameOver = true;
-
-    gameStarted = false;
-
-
-    document
-        .getElementById(
-            "gameOverScreen"
-        )
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "gameOverMessage"
-        )
-        .textContent =
-        "Score: " +
-        score +
-        " | Coins: " +
-        coins;
-}
-
-
-/* =====================================================
-   VICTORY
-===================================================== */
-
-function winGame() {
-
-    victory = true;
-
-    gameStarted = false;
-
-
-    document
-        .getElementById(
-            "victoryScreen"
-        )
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "victoryMessage"
-        )
-        .textContent =
-        "Score: " +
-        score +
-        " | Coins: " +
-        coins;
-}
-
-
-/* =====================================================
-   RESTART
-===================================================== */
-
-function restartGame() {
-
-    location.reload();
-}
-
-
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-document
-    .getElementById(
-        "startButton"
-    )
-    .addEventListener(
-        "click",
-        startGame
-    );
-
-
-document
-    .getElementById(
-        "pauseButton"
-    )
-    .addEventListener(
-        "click",
-        togglePause
-    );
-
-
-document
-    .getElementById(
-        "resumeButton"
-    )
-    .addEventListener(
-        "click",
-        togglePause
-    );
-
-
-document
-    .getElementById(
-        "restartButton1"
-    )
-    .addEventListener(
-        "click",
-        restartGame
-    );
-
-
-document
-    .getElementById(
-        "restartButton2"
-    )
-    .addEventListener(
-        "click",
-        restartGame
-    );
-
-
-document
-    .getElementById(
-        "restartButton3"
-    )
-    .addEventListener(
-        "click",
-        restartGame
-    );
-
-
-/* =====================================================
-   GAME LOOP
-===================================================== */
-
-function gameLoop() {
-
-    frame++;
-
-
-    if (
-        gameStarted &&
-        !paused &&
-        !gameOver &&
-        !victory
-    ) {
-
-        updatePlayer();
-
-        updateAttack();
-
-        updateEnemies();
-
-        updateBoss();
-
-        updateCoins();
-
-
-        /* QUEST PROGRESSION */
-
-        if (
-            player.x < 900
-        ) {
-
-            quest(
-                "🏛️ Reach the ancient temple."
-            );
-        }
-
-
-        else if (
-            player.x < 1650
-        ) {
-
-            quest(
-                "🛕 Explore the ancient temple."
-            );
-        }
-
-
-        else if (
-            player.x < 2700
-        ) {
-
-            quest(
-                "🌳 Enter the sacred forest."
-            );
-        }
-
-
-        else if (
-            player.x < 4400
-        ) {
-
-            quest(
-                "⚔️ Defeat the forest guardians."
-            );
-        }
-
-
-        else if (
-            player.x < 5300
-        ) {
-
-            quest(
-                "🔥 Continue toward the final realm."
-            );
-        }
-
-
-        else {
-
-            quest(
-                "👑 Defeat the Forest Guardian!"
-            );
-        }
-
-
-        updateHUD();
-    }
-
 
     draw();
 
-
-    requestAnimationFrame(
-        gameLoop
-    );
 }
 
-
-/* =====================================================
-   START LOOP
-===================================================== */
-
-updateHUD();
+createCoins();
+createEnemies();
 
 gameLoop();
 
