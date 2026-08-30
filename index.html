@@ -3,60 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+          content="width=device-width, initial-scale=1.0,
+                   maximum-scale=1.0, user-scalable=no">
+
     <title>Legends of Bharata</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div id="gameContainer">
+<div id="game">
 
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-    <!-- Start Screen -->
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="hudBox">
+
+            <div class="title">
+                🕉️ LEGENDS OF BHARATA
+            </div>
+
+            <div>
+                ❤️ <span id="health">100</span>
+            </div>
+
+            <div>
+                🪙 <span id="coins">0</span>
+            </div>
+
+            <div>
+                ⭐ Level <span id="level">1</span>
+            </div>
+
+            <div>
+                🏆 <span id="score">0</span>
+            </div>
+
+        </div>
+
+        <div id="quest">
+            📜 Quest: Defeat the forest guardians
+        </div>
+
+        <button id="pauseButton"
+                onclick="togglePause()">
+            ⏸
+        </button>
+
+    </div>
+
+
+    <!-- START SCREEN -->
+
     <div id="startScreen" class="screen">
-        <h1>🕉️ LEGENDS OF BHARATA</h1>
-        <p>The Journey of the Guardian</p>
-        <button onclick="startGame()">START GAME</button>
-        <p class="help">
-            Keyboard: A/D or ←/→ Move | W / ↑ Jump | Space Attack
+
+        <div class="logo">🕉️</div>
+
+        <h1>LEGENDS OF BHARATA</h1>
+
+        <h2>The Guardian's Journey</h2>
+
+        <p>
+            Enter the ancient realm and begin your journey.
         </p>
+
+        <button onclick="startGame()">
+            ⚔️ BEGIN JOURNEY
+        </button>
+
+        <div class="controlsText">
+
+            <b>Keyboard</b><br>
+
+            A / D or ◀ / ▶ — Move<br>
+            W / ↑ — Jump<br>
+            SPACE — Attack<br>
+            P — Pause
+
+        </div>
+
     </div>
 
-    <!-- Game Over -->
-    <div id="gameOverScreen" class="screen hidden">
-        <h1>GAME OVER</h1>
-        <p id="finalScore">Score: 0</p>
-        <button onclick="restartGame()">PLAY AGAIN</button>
+
+    <!-- PAUSE -->
+
+    <div id="pauseScreen"
+         class="screen hidden">
+
+        <h1>⏸ PAUSED</h1>
+
+        <button onclick="togglePause()">
+            ▶ CONTINUE
+        </button>
+
     </div>
 
-    <!-- Mobile Controls -->
+
+    <!-- GAME OVER -->
+
+    <div id="gameOverScreen"
+         class="screen hidden">
+
+        <h1>⚔️ JOURNEY ENDED</h1>
+
+        <p id="gameOverText"></p>
+
+        <button onclick="restartGame()">
+            🔄 PLAY AGAIN
+        </button>
+
+    </div>
+
+
+    <!-- MOBILE CONTROLS -->
+
     <div id="mobileControls">
 
-        <div class="movement">
+        <div class="leftControls">
+
             <button
-                ontouchstart="keys.left=true"
-                ontouchend="keys.left=false">
+                ontouchstart="pressLeft()"
+                ontouchend="releaseLeft()">
                 ◀
             </button>
 
             <button
-                ontouchstart="keys.right=true"
-                ontouchend="keys.right=false">
+                ontouchstart="pressRight()"
+                ontouchend="releaseRight()">
                 ▶
             </button>
+
         </div>
 
-        <div class="actions">
+        <div class="rightControls">
 
-            <button
-                ontouchstart="jump()">
+            <button onclick="jump()">
                 ▲
             </button>
 
-            <button
-                ontouchstart="attack()">
+            <button onclick="attack()">
                 ⚔️
             </button>
 
