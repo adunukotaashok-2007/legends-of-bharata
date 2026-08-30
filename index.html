@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Legends of Bharata</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="gameContainer">
+
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="screen">
+        <h1>🕉️ LEGENDS OF BHARATA</h1>
+        <p>The Journey of the Guardian</p>
+        <button onclick="startGame()">START GAME</button>
+        <p class="help">
+            Keyboard: A/D or ←/→ Move | W / ↑ Jump | Space Attack
+        </p>
+    </div>
+
+    <!-- Game Over -->
+    <div id="gameOverScreen" class="screen hidden">
+        <h1>GAME OVER</h1>
+        <p id="finalScore">Score: 0</p>
+        <button onclick="restartGame()">PLAY AGAIN</button>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div id="mobileControls">
+
+        <div class="movement">
+            <button
+                ontouchstart="keys.left=true"
+                ontouchend="keys.left=false">
+                ◀
+            </button>
+
+            <button
+                ontouchstart="keys.right=true"
+                ontouchend="keys.right=false">
+                ▶
+            </button>
+        </div>
+
+        <div class="actions">
+
+            <button
+                ontouchstart="jump()">
+                ▲
+            </button>
+
+            <button
+                ontouchstart="attack()">
+                ⚔️
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>
