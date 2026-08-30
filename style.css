@@ -20,29 +20,69 @@ body {
 
 #game {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
-canvas {
+#gameCanvas {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    display: block;
 }
 
 
-/* =========================
-   SCREENS
-========================= */
+/* ==============================
+   COMMON
+============================== */
+
+button {
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+
+    color: #ffffff;
+    background: #d88919;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    padding: 14px 24px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 5px 0 #8c5410;
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #8c5410;
+}
+
+
+/* ==============================
+   START / PAUSE / GAME OVER
+============================== */
 
 .screen {
     position: absolute;
-    inset: 0;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    z-index: 100;
 
     display: flex;
     flex-direction: column;
+
     justify-content: center;
     align-items: center;
 
@@ -50,25 +90,24 @@ canvas {
 
     padding: 20px;
 
+    color: white;
+
     background:
         radial-gradient(
             circle at center,
-            rgba(255,190,70,0.15),
-            rgba(10,25,30,0.96)
+            rgba(255, 190, 70, 0.18),
+            rgba(10, 25, 30, 0.97)
         );
-
-    color: white;
-
-    z-index: 20;
 }
 
 .screen.hidden {
-    display: none;
+    display: none !important;
 }
 
 .screen h1 {
-    font-size: clamp(34px, 7vw, 76px);
-    letter-spacing: 3px;
+    font-size: clamp(32px, 8vw, 72px);
+    line-height: 1.1;
+    letter-spacing: 2px;
     margin-bottom: 12px;
 }
 
@@ -78,62 +117,34 @@ canvas {
 }
 
 .screen p {
-    font-size: 18px;
-    margin-bottom: 25px;
+    max-width: 600px;
+    font-size: 17px;
+    line-height: 1.5;
+    margin-bottom: 24px;
 }
 
 .om {
-    font-size: 55px;
-    margin-bottom: 15px;
-}
-
-
-/* =========================
-   BUTTON
-========================= */
-
-button {
-    border: none;
-    cursor: pointer;
-
-    font-weight: bold;
-
-    color: white;
-
-    background: #d88919;
-
-    border-radius: 14px;
-
-    padding: 16px 28px;
-
-    font-size: 18px;
-
-    box-shadow:
-        0 5px 0 #8c5410,
-        0 10px 25px rgba(0,0,0,0.3);
-}
-
-button:active {
-    transform: translateY(4px);
-    box-shadow:
-        0 1px 0 #8c5410;
+    font-size: 60px;
+    line-height: 1;
+    margin-bottom: 20px;
 }
 
 #startButton {
-    font-size: 20px;
-    padding: 18px 34px;
-    margin-bottom: 25px;
+    font-size: 19px;
+    padding: 17px 30px;
+    margin-bottom: 22px;
 }
 
 
-/* =========================
-   INFO
-========================= */
+/* ==============================
+   CONTROL INFORMATION
+============================== */
 
 .controls-info,
 .mobile-info {
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
     line-height: 1.7;
-    font-size: 15px;
 }
 
 .mobile-info {
@@ -141,16 +152,18 @@ button:active {
 }
 
 
-/* =========================
+/* ==============================
    HUD
-========================= */
+============================== */
 
 #hud {
     position: absolute;
 
-    top: 15px;
-    left: 15px;
-    right: 15px;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+
+    z-index: 20;
 
     display: flex;
 
@@ -159,40 +172,37 @@ button:active {
 
     color: white;
 
-    z-index: 10;
-
     pointer-events: none;
 }
 
 .hud-left {
-    background: rgba(20,30,35,0.78);
+    min-width: 180px;
+
+    padding: 9px 12px;
 
     border-radius: 12px;
 
-    padding: 10px 14px;
+    background: rgba(15, 25, 30, 0.78);
 
-    min-width: 190px;
-
+    font-size: 15px;
     line-height: 1.8;
-
-    font-size: 16px;
 }
 
 .health-container {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
 }
 
 .health-bar {
-    width: 130px;
+    width: 120px;
     height: 12px;
 
-    background: #3b2525;
+    overflow: hidden;
+
+    background: #3a2222;
 
     border-radius: 20px;
-
-    overflow: hidden;
 }
 
 #healthBar {
@@ -201,15 +211,17 @@ button:active {
 
     background: #e53935;
 
+    border-radius: 20px;
+
     transition: width 0.2s;
 }
 
 .level-text {
-    background: rgba(20,30,35,0.78);
+    padding: 9px 15px;
 
     border-radius: 12px;
 
-    padding: 10px 18px;
+    background: rgba(15, 25, 30, 0.78);
 
     font-weight: bold;
 }
@@ -217,65 +229,70 @@ button:active {
 #pauseButton {
     pointer-events: auto;
 
-    padding: 10px 13px;
+    padding: 9px 12px;
 
-    font-size: 18px;
+    font-size: 17px;
+
+    background: rgba(30, 35, 40, 0.85);
 }
 
 
-/* =========================
+/* ==============================
    QUEST
-========================= */
+============================== */
 
 #questBox {
     position: absolute;
 
-    top: 90px;
+    top: 82px;
     left: 50%;
 
     transform: translateX(-50%);
 
-    min-width: 250px;
+    z-index: 20;
 
-    padding: 10px 18px;
+    width: max-content;
+    max-width: min(90vw, 420px);
 
-    text-align: center;
+    padding: 9px 16px;
 
     color: white;
 
-    background: rgba(20,30,35,0.72);
+    text-align: center;
+
+    background: rgba(15, 25, 30, 0.78);
 
     border-radius: 10px;
 
-    z-index: 10;
-
     font-size: 14px;
+
+    pointer-events: none;
 }
 
 #questText {
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 
-/* =========================
+/* ==============================
    MOBILE CONTROLS
-========================= */
+============================== */
 
 #mobileControls {
-    display: none;
-
     position: absolute;
 
     left: 0;
     right: 0;
-    bottom: 20px;
+    bottom: 15px;
 
-    padding: 0 20px;
+    z-index: 30;
+
+    display: none;
 
     justify-content: space-between;
     align-items: flex-end;
 
-    z-index: 15;
+    padding: 0 15px;
 
     pointer-events: none;
 }
@@ -283,35 +300,46 @@ button:active {
 .movement,
 .actions {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
 }
 
 #mobileControls button {
-    pointer-events: auto;
-
     width: 62px;
     height: 62px;
 
     padding: 0;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     border-radius: 50%;
 
-    font-size: 25px;
+    color: white;
 
-    background: rgba(30,35,40,0.78);
+    background: rgba(25, 30, 35, 0.82);
 
-    border: 2px solid rgba(255,255,255,0.5);
+    border: 2px solid rgba(255,255,255,0.45);
 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.45);
+}
+
+#mobileControls button:active {
+    background: rgba(70, 70, 70, 0.9);
 }
 
 
-/* =========================
-   MOBILE
-========================= */
+/* ==============================
+   TOUCH DEVICES
+============================== */
 
-@media (max-width: 800px),
-       (pointer: coarse) {
+@media (pointer: coarse) {
+
+    #mobileControls {
+        display: flex;
+    }
 
     .controls-info {
         display: none;
@@ -320,23 +348,30 @@ button:active {
     .mobile-info {
         display: block;
     }
+}
 
-    #mobileControls {
-        display: flex;
-    }
 
-    #questBox {
-        top: 85px;
-        max-width: 270px;
+/* ==============================
+   SMALL MOBILE
+============================== */
+
+@media (max-width: 500px) {
+
+    #hud {
+        top: 8px;
+        left: 8px;
+        right: 8px;
     }
 
     .hud-left {
-        min-width: 150px;
-        font-size: 13px;
+        min-width: 145px;
+        padding: 7px 9px;
+        font-size: 12px;
     }
 
     .health-bar {
-        width: 90px;
+        width: 85px;
+        height: 10px;
     }
 
     .level-text {
@@ -344,31 +379,101 @@ button:active {
     }
 
     #pauseButton {
+        padding: 8px 10px;
         font-size: 15px;
     }
 
-    .screen h1 {
-        letter-spacing: 1px;
+    #questBox {
+        top: 70px;
+        font-size: 12px;
+        padding: 8px 12px;
     }
-}
 
-
-/* SMALL PHONES */
-
-@media (max-width: 400px) {
-
-    #mobileControls button {
-        width: 55px;
-        height: 55px;
-        font-size: 21px;
+    #mobileControls {
+        bottom: 10px;
+        padding: 0 8px;
     }
 
     .movement,
     .actions {
-        gap: 7px;
+        gap: 6px;
+    }
+
+    #mobileControls button {
+        width: 54px;
+        height: 54px;
+        font-size: 21px;
+    }
+
+    .screen {
+        padding: 15px;
+    }
+
+    .screen h1 {
+        font-size: 30px;
+    }
+
+    .screen h2 {
+        font-size: 17px;
+    }
+
+    .screen p {
+        font-size: 14px;
+    }
+
+    .om {
+        font-size: 48px;
+    }
+}
+
+
+/* ==============================
+   VERY SMALL PHONES
+============================== */
+
+@media (max-width: 360px) {
+
+    #mobileControls button {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+
+    .movement,
+    .actions {
+        gap: 4px;
     }
 
     #mobileControls {
-        padding: 0 10px;
+        padding: 0 5px;
+    }
+}
+
+
+/* ==============================
+   LANDSCAPE MOBILE
+============================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    #mobileControls {
+        bottom: 8px;
+    }
+
+    #mobileControls button {
+        width: 52px;
+        height: 52px;
+    }
+
+    #questBox {
+        top: 58px;
+    }
+
+    .hud-left {
+        font-size: 11px;
+    }
+
+    .health-bar {
+        height: 9px;
     }
 }
